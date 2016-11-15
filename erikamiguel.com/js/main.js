@@ -45,6 +45,9 @@ $(document).ready(function(){
         time: 1000
     });
 
+    var local = moment();
+	$('#local').html(local.tz(moment.tz.guess()).format('z')) 
+
 });
 
 
