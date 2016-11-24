@@ -46,7 +46,9 @@ $(document).ready(function(){
     });
 
     var local = moment();
-	$('#local').html(local.tz(moment.tz.guess()).format('z')) 
+	var timezone = local.tz(moment.tz.guess()).format('z');
+	var zone_name = local._z.name
+	document.getElementById("local").value = zone_name
 
 });
 

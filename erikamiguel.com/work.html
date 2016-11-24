@@ -21,21 +21,80 @@ permalink: /work/
 <section id="portfolio-work">
     <div class="container">
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-12 col-lg-12">
             <div class="block">
-            <form >
-            Name:   <input type="text" name="first_name" />
+            <form id="consultation_form">
+            Name:   <input type="text" name="full_name" placeholder="First Last" />
             <br>
-            E-mail: <input type="text" name="email" />
+            E-mail: <input type="text" name="email" placeholder="something@domain.com" />
             <br>
             Date:   <input type="date" name="date"/>
             <br>
-            <input id="consult-button" type="submit" name="submit" value="Submit" onclick="form_submit()" />
+            <div class="row">
+                <div class="col-md-12 col-lg-12">
+                      <span>Start Time (your time):</span><input type="hidden" id="local" value=''></input> 
+                      <select id="hourStart">
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                        <option value="6">06</option>
+                        <option value="7">07</option>
+                        <option value="8">08</option>
+                        <option value="9">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option selected="selected" value="0">12</option>
+                    </select>
+                     <select id="minuteStart">
+                         <option value="0">00</option>
+                         <option value="15">15</option>
+                         <option value="30">30</option>
+                         <option value="45">45</option>
+                     </select>
+                     <div class="btn-group start_meridian">
+                      <button id="start-am" type="button" class="btn btn-default" onclick="change_meridian('start-am')">AM</button>
+                      <button id="start-pm" type="button" class="btn btn-default" onclick="change_meridian('start-pm')">PM</button>
+                     </div>
+                    
+                </div>
+                
+        </div>
             <br>
-            Start Time: <input type="time" name="start_time" />
-            <div id="local"></div>
-            </form>
+             <div class="row">
+                <div class="col-md-12 col-lg-12">
+                      <span>End Time (your time):</span>
+                      <select id="hourEnd">
+                        <option value="1">01</option>
+                        <option value="2">02</option>
+                        <option value="3">03</option>
+                        <option value="4">04</option>
+                        <option value="5">05</option>
+                        <option value="6">06</option>
+                        <option value="7">07</option>
+                        <option value="8">08</option>
+                        <option value="9">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option selected="selected" value="0">12</option>
+                    </select>
+                     <select id="minuteEnd">
+                         <option value="0">00</option>
+                         <option value="15">15</option>
+                         <option value="30">30</option>
+                         <option value="45">45</option>
+                     </select>
+                     <div class="btn-group end_meridian">
+                      <button id="end-am" type="button" class="btn btn-default" onclick="change_meridian('end-am')">AM</button>
+                      <button id="end-pm" type="button" class="btn btn-default" onclick="change_meridian('end-pm')">PM</button>
+                     </div>
+                </div>
             </div>
+            <input id="consult-button" type="button" name="submit" value="Submit" onclick="form_submit()" />
+            <br>
+            </form>
+           
         </div>
     </div>
 </section>
