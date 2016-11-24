@@ -11,7 +11,7 @@ permalink: /work/
             <div class="col-md-12">
                 <div class="block">
                     <h1>Projects</h1>
-                    <p>It's normal to have several things going on at once  </p>
+                    <p>I'm looking to work with you to build the next big thing</p>
                 </div>
             </div>
         </div>
@@ -23,17 +23,21 @@ permalink: /work/
         <div class="row">
           <div class="col-md-12 col-lg-12">
             <div class="block">
-            <form id="consultation_form">
+            <form id="consultation_form" class="form-horizontal">
+            <div class="form-group">
             Name:   <input type="text" name="full_name" placeholder="First Last" />
-            <br>
+            </div>
+            <div class="form-group">
             E-mail: <input type="text" name="email" placeholder="something@domain.com" />
-            <br>
+            </div>
+            <div class="form-group">
             Date:   <input type="date" name="date"/>
-            <br>
+            </div>
+            <div class="form-group">
             <div class="row">
                 <div class="col-md-12 col-lg-12">
                       <span>Start Time (your time):</span><input type="hidden" id="local" value=''></input> 
-                      <select id="hourStart">
+                      <select id="hour_start">
                         <option value="1">01</option>
                         <option value="2">02</option>
                         <option value="3">03</option>
@@ -47,7 +51,7 @@ permalink: /work/
                         <option value="11">11</option>
                         <option selected="selected" value="0">12</option>
                     </select>
-                     <select id="minuteStart">
+                     <select id="minute_start">
                          <option value="0">00</option>
                          <option value="15">15</option>
                          <option value="30">30</option>
@@ -57,15 +61,15 @@ permalink: /work/
                       <button id="start-am" type="button" class="btn btn-default" onclick="change_meridian('start-am')">AM</button>
                       <button id="start-pm" type="button" class="btn btn-default" onclick="change_meridian('start-pm')">PM</button>
                      </div>
-                    
+                   </div> 
                 </div>
                 
         </div>
-            <br>
+        <div class="form-group">
              <div class="row">
                 <div class="col-md-12 col-lg-12">
                       <span>End Time (your time):</span>
-                      <select id="hourEnd">
+                      <select id="hour_end">
                         <option value="1">01</option>
                         <option value="2">02</option>
                         <option value="3">03</option>
@@ -79,7 +83,7 @@ permalink: /work/
                         <option value="11">11</option>
                         <option selected="selected" value="0">12</option>
                     </select>
-                     <select id="minuteEnd">
+                     <select id="minute_end">
                          <option value="0">00</option>
                          <option value="15">15</option>
                          <option value="30">30</option>
@@ -91,7 +95,8 @@ permalink: /work/
                      </div>
                 </div>
             </div>
-            <input id="consult-button" type="button" name="submit" value="Submit" onclick="form_submit()" />
+            </div>
+            <input id="consult-button" type="button" class="btn btn-primary" name="submit" value="Submit" onclick="form_submit()" />
             <br>
             </form>
            

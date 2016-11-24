@@ -1,16 +1,11 @@
 function form_submit() {
 	var form = document.getElementById("consultation_form");
-	var name = form.elements[0].value
-	var email = form.elements[1].value
-	var date = form.elements[2].value
-	var start_time = form.elements[3].value
-	var start_meridian = "AM"
-	if (isActive("#start-pm")){
-		start_meridian = "PM"
-	}
-	var end_time = form.elements[4].value
-	var local = moment();
-	var timezone = local.tz(moment.tz.guess()).format('z');
+	var name = form.elements[0].value;
+	var email = form.elements[1].value;
+	var date = formatDate(form.elements[2].value.split("-").join("/"))
+	var start_time = getTime($("#hour_start :selected").text(), $("#minute_start :selected").text(),getMeridian("start"));
+	var end_time = getTime($("#hour_end :selected").text(), $("#minute_end :selected").text(),getMeridian("end"));
+	var timezone = $("#local").val()
 	var appointment = {
 		"name": name,
 		"e-mail": email,
@@ -69,5 +64,30 @@ function removeActive(element){
 
 function addActive(element){
 	$("#"+element).addClass("active")
+}
+
+function getTime(hour_start, minute_start, meridian){
+	time = hour_start + ":" + minute_start + meridian
+	return time
+}
+
+function getMeridian(start){
+	if(start.includes("end")){
+		start = "end"
+	}
+	meridian = start + "-pm"
+	var AM = "AM"
+	if (isActive(meridian)){
+		AM = "PM"
+	}
+	return AM
+}
+
+function formatDate(date){
+	month = date[5] + date[6]
+	day = date[8] + date[9]
+	year = date[0] + date[1] + date[2] + date[3]
+	date = month + "/" + day + "/" + year
+	return date
 }
 
