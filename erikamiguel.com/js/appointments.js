@@ -39,8 +39,23 @@ function ordersLoad(){
 }
 
 function approveAppointment(id){
+	document.getElementById(id).disabled = true;
 	appointment = appointments[id];
 	appointment["approved"] = "yes"
-	console.log(appointment)
+	var xhr = new XMLHttpRequest();
+	xhr = new XMLHttpRequest();
+	var url = "url";
+	xhr.open("POST", 'https://api.erikamiguel.com/consult/new-consultation', true);
+	xhr.setRequestHeader("Content-type", "application/json");
+	xhr.onreadystatechange = function () { 
+	    if (xhr.readyState == 4 && xhr.status == 200) {
+	        var json = JSON.parse(xhr.responseText);
+	        document.getElementById(id).disabled = false;
+	        document.getElementById(id).className = "btn btn-xs btn-success";
+	        document.getElementById(id).innerHTML = "Approved";
+	    }
+	}
+	var data = JSON.stringify(appointment);
+	xhr.send(data);
 }
 
