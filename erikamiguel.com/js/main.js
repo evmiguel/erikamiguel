@@ -45,11 +45,6 @@ $(document).ready(function(){
         time: 1000
     });
 
-    var local = moment();
-	var timezone = local.tz(moment.tz.guess()).format('z');
-	var zone_name = local._z.name
-	document.getElementById("local").value = zone_name
-
 });
 
 

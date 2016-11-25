@@ -5,7 +5,7 @@ function form_submit() {
 	var date = formatDate(form.elements[2].value.split("-").join("/"))
 	var start_time = getTime($("#hour_start :selected").text(), $("#minute_start :selected").text(),getMeridian("start"));
 	var end_time = getTime($("#hour_end :selected").text(), $("#minute_end :selected").text(),getMeridian("end"));
-	var timezone = $("#local").val()
+	var timezone = getTimeZone()
 	var appointment = {
 		"name": name,
 		"e-mail": email,
@@ -91,5 +91,12 @@ function formatDate(date){
 	year = date[0] + date[1] + date[2] + date[3]
 	date = month + "/" + day + "/" + year
 	return date
+}
+
+function getTimeZone(){
+	var local = moment();
+	var timezone = local.tz(moment.tz.guess()).format('z');
+	var zone_name = local._z.name
+	return zone_name
 }
 
