@@ -14,7 +14,8 @@ function form_submit() {
 		"end_time": end_time,
 		"time_zone": timezone
 	}
-	console.log(appointment)
+	document.getElementById("success").innerHTML = "Appointment being made..."
+	document.getElementById("consult-button").disabled = true;
 	var xhr = new XMLHttpRequest();
 	xhr = new XMLHttpRequest();
 	var url = "url";
@@ -23,7 +24,8 @@ function form_submit() {
 	xhr.onreadystatechange = function () { 
 	    if (xhr.readyState == 4 && xhr.status == 200) {
 	        var json = JSON.parse(xhr.responseText);
-	     	console.log(json)
+	        document.getElementById("success").innerHTML = "Success! You should get a confimation e-mail once your appointment is approved"
+	        document.getElementById("consult-button").disabled = false;
 	    }
 	}
 	var data = JSON.stringify(appointment);
