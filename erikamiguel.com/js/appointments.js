@@ -12,9 +12,14 @@ function getUnapprovedAppointments(url, callback)
 }
 
 function processUnapprovedAppointments(data){
-	var appointments_list = document.getElementById("unapproved_appointments");
-	var table_rows = '<tr><th>Order</th><th>Name</th><th>Start</th><th>End</th><th>E-mail</th><th>Time Zone</th></tr>';
 	json_data = JSON.parse(data)
+	if(json_data.length <= 0) { 
+		noOrders(); 
+		return 
+	}
+	var appointments_list = document.getElementById("unapproved_appointments");
+	appointments_list.innerHTML = "Loading.."
+	var table_rows = '<tr><th>Order</th><th>Name</th><th>Date</th><th>Start</th><th>End</th><th>E-mail</th><th>Time Zone</th></tr>';
 	appointments = json_data
 	for(var i = 0; i < json_data.length; i++) {
 		object = json_data[i]
@@ -59,3 +64,6 @@ function approveAppointment(id){
 	xhr.send(data);
 }
 
+function noOrders(){
+	document.getElementById("unapproved_appointments").innerHTML = "No orders to approve."
+}
