@@ -14,6 +14,11 @@ function form_submit() {
 		"end_time": end_time,
 		"time_zone": timezone
 	}
+	if(start_time.includes("PM") && end_time.includes("AM")){
+		var end_date = new Date(date);
+		end_date.setDate(end_date.getDate()+1);
+		appointment.end_date = (end_date.getMonth()%12+1) + "/" + end_date.getDate() + "/" + end_date.getFullYear();
+	}
 	document.getElementById("success").innerHTML = "Appointment being made..."
 	document.getElementById("consult-button").disabled = true;
 	var xhr = new XMLHttpRequest();
