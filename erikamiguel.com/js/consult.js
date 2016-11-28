@@ -3,8 +3,24 @@ function form_submit() {
 	var name = form.elements[0].value;
 	var email = form.elements[1].value;
 	var date = formatDate(form.elements[2].value.split("-").join("/"))
-	var start_time = getTime($("#hour_start :selected").text(), $("#minute_start :selected").text(),getMeridian("start"));
-	var end_time = getTime($("#hour_end :selected").text(), $("#minute_end :selected").text(),getMeridian("end"));
+	var hour_start = $("#hour_start :selected").text()
+	var hour_end = $("#hour_end :selected").text()
+	var start_int = parseInt(hour_start)
+	var end_int = parseInt(hour_end)
+	var start_meridian = getMeridian("start")
+	var end_meridian = getMeridian("end")
+	if (start_meridian.includes("AM")){
+		start_int = start_int*-1
+	}
+	if (end_meridian.includes("AM")){
+		end_int = end_int*-1
+	}
+	if ((start_int.mod(12) + end_int.mod(12))>1){
+		document.getElementById("success").innerHTML = "Appointments should be made in 1 hour intervals. Please change times."
+		return
+	}
+	var start_time = getTime(hour_start, $("#minute_start :selected").text(),start_meridian);
+	var end_time = getTime(hour_end, $("#minute_end :selected").text(),end_meridian);
 	var timezone = getTimeZone()
 	var appointment = {
 		"name": name,
@@ -103,5 +119,9 @@ function getTimeZone(){
 	var timezone = local.tz(moment.tz.guess()).format('z');
 	var zone_name = local._z.name
 	return zone_name
+}
+
+Number.prototype.mod = function(n) {
+	return ((this%n)+n)%n;
 }
 
