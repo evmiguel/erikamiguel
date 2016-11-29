@@ -32,8 +32,9 @@ function processUnapprovedAppointments(data){
 		column5 = start_tag + object['end_time'] + end_tag
 		column6 = start_tag + object['e-mail'] + end_tag
 		column7 = start_tag + object['time_zone'] + end_tag
-		column8 = start_tag + "<button id='" + i +"' class='btn btn-xs btn-primary' onClick='approveAppointment(this.id)'>Approve</button>" + end_tag
-		row = "<tr>" + column1 + column2 + column3 + column4 + column5 + column6 + column7 + column8+ "</tr>"
+		column8 = start_tag + "<button id='approved-" + i +"' class='btn btn-xs btn-primary' onClick='handleAppointment(this.id)'>Approve</button>" + end_tag
+		column9 = start_tag + "<button id='rejected-" + i +"' class='btn btn-xs btn-danger' onClick='handleAppointment(this.id)'>Reject</button>" + end_tag
+		row = "<tr>" + column1 + column2 + column3 + column4 + column5 + column6 + column7 + column8 + column9+ "</tr>"
 		table_rows += row
 	}
 	appointments_list.innerHTML = table_rows
@@ -43,21 +44,34 @@ function ordersLoad(){
 	getUnapprovedAppointments("https://api.erikamiguel.com/consult/unapproved",processUnapprovedAppointments)
 }
 
-function approveAppointment(id){
+function handleAppointment(id){
 	document.getElementById(id).disabled = true;
-	appointment = appointments[id];
-	appointment["approved"] = "yes"
+	var id_arr = id.split("-");
+	var status = id_arr[0];
+	var index = id_arr[1];
+      if(status.includes("approved")){
+    	document.getElementById("rejected-"+index).disabled = true;
+    } else {
+    	document.getElementById("approved-"+index).disabled = true;
+    }
+    appointment = appointments[parseInt(index)]
+	appointment[status] = "yes"
 	var xhr = new XMLHttpRequest();
 	xhr = new XMLHttpRequest();
-	var url = "url";
 	xhr.open("POST", 'https://api.erikamiguel.com/consult/new-consultation', true);
 	xhr.setRequestHeader("Content-type", "application/json");
 	xhr.onreadystatechange = function () { 
 	    if (xhr.readyState == 4 && xhr.status == 200) {
 	        var json = JSON.parse(xhr.responseText);
-	        document.getElementById(id).disabled = false;
-	        document.getElementById(id).className = "btn btn-xs btn-success";
-	        document.getElementById(id).innerHTML = "Approved";
+	        if(status.includes("approved")){
+	        	document.getElementById(id).className = "btn btn-xs btn-success";
+	        	document.getElementById(id).innerHTML = "Approved";
+	        } else {
+	        	document.getElementById(id).className = "btn btn-xs btn-warning";
+	        	document.getElementById(id).innerHTML = "Rejected";
+	        }
+	        
+	        
 	    }
 	}
 	var data = JSON.stringify(appointment);
