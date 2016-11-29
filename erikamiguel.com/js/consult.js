@@ -5,8 +5,12 @@ function form_submit() {
 	var date = formatDate(form.elements[2].value.split("-").join("/"))
 	var hour_start = $("#hour_start :selected").text()
 	var hour_end = $("#hour_end :selected").text()
+	var minute_start = $("#minute_start :selected").text();
+	var minute_end = $("#minute_end :selected").text();
 	var start_int = parseInt(hour_start)
 	var end_int = parseInt(hour_end)
+	var minute_start_int = parseInt(minute_start)
+	var minute_end_int = parseInt(minute_end)
 	var start_meridian = getMeridian("start")
 	var end_meridian = getMeridian("end")
 	if (start_meridian.includes("AM")){
@@ -15,12 +19,13 @@ function form_submit() {
 	if (end_meridian.includes("AM")){
 		end_int = end_int*-1
 	}
-	if ((start_int.mod(12) + end_int.mod(12))>1){
-		document.getElementById("success").innerHTML = "Appointments should be made in 1 hour intervals. Please change times."
+	var error_message = "Appointments should be 1 hour at most. Please modify times."
+	if ((start_int.mod(12) + end_int.mod(12))>1 || ((start_int.mod(12) + end_int.mod(12))>=1 && (minute_end_int - minute_start_int) > 0)){
+		document.getElementById("success").innerHTML = error_message
 		return
 	}
-	var start_time = getTime(hour_start, $("#minute_start :selected").text(),start_meridian);
-	var end_time = getTime(hour_end, $("#minute_end :selected").text(),end_meridian);
+	var start_time = getTime(hour_start, minute_start,start_meridian);
+	var end_time = getTime(hour_end, minute_end,end_meridian);
 	var timezone = getTimeZone()
 	var appointment = {
 		"name": name,
