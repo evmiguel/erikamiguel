@@ -7,26 +7,17 @@ function form_submit() {
 	var hour_end = $("#hour_end :selected").text()
 	var minute_start = $("#minute_start :selected").text();
 	var minute_end = $("#minute_end :selected").text();
-	var start_int = parseInt(hour_start)
-	var end_int = parseInt(hour_end)
-	var minute_start_int = parseInt(minute_start)
-	var minute_end_int = parseInt(minute_end)
 	var start_meridian = getMeridian("start")
 	var end_meridian = getMeridian("end")
-	if (start_meridian.includes("AM")){
-		start_int = start_int*-1
+	if (validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridian, end_meridian)){
+		var start_time = getTime(hour_start, minute_start,start_meridian);
+		var end_time = getTime(hour_end, minute_end,end_meridian);
+		var timezone = getTimeZone()
+		createConsultation(name,email,date,start_time,end_time,timezone);
 	}
-	if (end_meridian.includes("AM")){
-		end_int = end_int*-1
-	}
-	var error_message = "Appointments should be 1 hour at most. Please modify times."
-	if ((start_int.mod(12) + end_int.mod(12))>1 || ((start_int.mod(12) + end_int.mod(12))>=1 && (minute_end_int - minute_start_int) > 0)){
-		document.getElementById("success").innerHTML = error_message
-		return
-	}
-	var start_time = getTime(hour_start, minute_start,start_meridian);
-	var end_time = getTime(hour_end, minute_end,end_meridian);
-	var timezone = getTimeZone()
+}
+
+function createConsultation(name,email,date,start_time,end_time,timezone){
 	var appointment = {
 		"name": name,
 		"e-mail": email,
@@ -124,6 +115,34 @@ function getTimeZone(){
 	var timezone = local.tz(moment.tz.guess()).format('z');
 	var zone_name = local._z.name
 	return zone_name
+}
+
+function validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridian, end_meridian){
+	var start_int = parseInt(hour_start)
+	var end_int = parseInt(hour_end)
+	var minute_start_int = parseInt(minute_start)
+	var minute_end_int = parseInt(minute_end)
+	var error_message = "Appointments should be 1 hour at most. Please modify times."
+	if(start_meridian.includes("AM") && (start_int % 12) == 0){
+		start_int = 0
+	}
+	if(end_meridian.includes("AM") && (end_int % 12) == 0){
+		end_int += 12
+	}
+	if(start_meridian.includes("PM") && (start_int % 12) != 0){
+		start_int += 12
+	}
+	if(end_meridian.includes("PM") && (end_int % 12) != 0){
+		end_int += 12
+	}
+	if ((Math.abs(end_int-start_int) > 1) || ((Math.abs(end_int-start_int) >= 1) && (minute_end - minute_start > 0))) {
+		document.getElementById("success").innerHTML = error_message
+		return false
+	} else if ((Math.abs(end_int-start_int) == 0)){
+		document.getElementById("success").innerHTML = "Please select a time interval that is an hour at most."
+		return false
+	}
+	return true
 }
 
 Number.prototype.mod = function(n) {
