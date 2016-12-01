@@ -19,7 +19,7 @@ function processUnapprovedAppointments(data){
 	}
 	var appointments_list = document.getElementById("unapproved_appointments");
 	appointments_list.innerHTML = "Loading.."
-	var table_rows = '<tr><th>Order</th><th>Name</th><th>Date</th><th>Start</th><th>End</th><th>E-mail</th><th>Time Zone</th></tr>';
+	var table_rows = '<tr><th>Order</th><th>Name</th><th>Date</th><th>Company</th><th>Start</th><th>End</th><th>E-mail</th><th>Time Zone</th><th>Date</th></tr>';
 	appointments = json_data
 	for(var i = 0; i < json_data.length; i++) {
 		object = json_data[i]
@@ -28,14 +28,23 @@ function processUnapprovedAppointments(data){
 		column1 = start_tag + object['order'] + end_tag
 		column2 = start_tag + object['name'] + end_tag
 		column3 = start_tag + object['date'] + end_tag
-		column4 = start_tag + object['start_time'] + end_tag
-		column5 = start_tag + object['end_time'] + end_tag
-		column6 = start_tag + object['e-mail'] + end_tag
-		column7 = start_tag + object['time_zone'] + end_tag
-		column8 = start_tag + "<button id='approved-" + i +"' class='btn btn-xs btn-primary' onClick='handleAppointment(this.id)'>Approve</button>" + end_tag
-		column9 = start_tag + "<button id='rejected-" + i +"' class='btn btn-xs btn-danger' onClick='handleAppointment(this.id)'>Reject</button>" + end_tag
-		row = "<tr>" + column1 + column2 + column3 + column4 + column5 + column6 + column7 + column8 + column9+ "</tr>"
+		column4 = start_tag + object['company'] + end_tag
+		column5 = start_tag + object['start_time'] + end_tag
+		column6 = start_tag + object['end_time'] + end_tag
+		column7 = start_tag + object['e-mail'] + end_tag
+		column8 = start_tag + object['time_zone'] + end_tag
+		column9 = start_tag + "<button id='message' class='btn btn-xs btn-default' data-toggle='modal' data-target='#modal"+i+"'>View</button>" + end_tag
+		column10 = start_tag + "<button id='approved-" + i +"' class='btn btn-xs btn-primary' onClick='handleAppointment(this.id)'>Approve</button>" + end_tag
+		column11 = start_tag + "<button id='rejected-" + i +"' class='btn btn-xs btn-danger' onClick='handleAppointment(this.id)'>Reject</button>" + end_tag
+		row = "<tr>" + column1 + column2 + column3 + column4 + column5 + column6 + column7 + column8 + column9 + column10 + column11 + "</tr>"
 		table_rows += row
+		modal = "<div class='modal fade' id='modal"+i+"' tabindex='-1' role='dialog' aria-labelledby='modal"+i+"Label'>"
+		modal += `<div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+        modal += "<h4 class='modal-title' id='modal"+i+"Label'>"+object['name']+"'s Message</h4></div><div class='modal-body'>"
+      modal += object['message']
+      modal +=`</div></div></div></div>`
+		table_rows += modal
 	}
 	appointments_list.innerHTML = table_rows
 }
