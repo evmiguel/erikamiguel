@@ -1,14 +1,28 @@
 function form_submit() {
-	var form = document.getElementById("consultation_form");
-	var name = form.elements[0].value;
-	var email = form.elements[1].value;
-	var date = formatDate(form.elements[2].value.split("-").join("/"))
-	var hour_start = $("#hour_start :selected").text()
-	var hour_end = $("#hour_end :selected").text()
+	var form = $('#consultation_form');
+	var name = form.find('input[name="full_name"]').val();
+	var email = form.find('input[name="email"]').val();
+	var phone_number = form.find('input[name="phone_number"]').val()
+	var company = form.find('input[name="company"]').val()
+	var date = formatDate(form.find('input[name="date"]').val().split("-").join("/"))
+	var message = form.find('textarea[name="message"]').val();
+	var hour_start = $("#hour_start :selected").text();
+	var hour_end = $("#hour_end :selected").text();
 	var minute_start = $("#minute_start :selected").text();
 	var minute_end = $("#minute_end :selected").text();
-	var start_meridian = getMeridian("start")
-	var end_meridian = getMeridian("end")
+	var start_meridian = getMeridian("start");
+	var end_meridian = getMeridian("end");
+	empty = getEmptyFields(name,email,phone_number,company,message,date);
+	if(empty.length > 0){
+		missing = "<b>Missing:</b> <br>"
+		 for (var i = 0, j = empty.length; i < j; i++){
+		 	item = "&nbsp;&nbsp;&nbsp;&nbsp;<b>" + empty[i] + "</b><br>"
+			missing += item
+		}
+		document.getElementById("missing").innerHTML = missing
+		return
+	}
+
 	if (validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridian, end_meridian)){
 		var start_time = getTime(hour_start, minute_start,start_meridian);
 		var end_time = getTime(hour_end, minute_end,end_meridian);
@@ -17,7 +31,60 @@ function form_submit() {
 	}
 }
 
-function createConsultation(name,email,date,start_time,end_time,timezone){
+function ValidateEmail(inputText)  
+{  
+	var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;  
+	if(inputText.value.match(mailformat))  
+	{  
+		document.form1.text1.focus();  
+		return true;  
+	}  
+	else  
+	{  
+		alert("You have entered an invalid email address!");  
+		document.form1.text1.focus();  
+	return false;  
+	}  
+} 
+
+function getEmptyFields(name,email,phone_number,company,message,date){
+	var empty = []
+	if(isEmpty(name)){
+		empty.push("Name");
+		$('#consultation_form').find('input[name="full_name"]').focus()
+	}
+	if(isEmpty(email)){
+		empty.push("E-mail");
+		$('#consultation_form').find('input[name="email"]').focus();
+	}
+	if(isEmpty(phone_number)){
+		empty.push("Phone Number");
+		$('#consultation_form').find('input[name="phone_number"]').focus();
+	}
+	if(isEmpty(company)){
+		empty.push("Company");
+		$('#consultation_form').find('input[name="company"]').focus();
+	}
+	if(isEmpty(message)){
+		empty.push("Message");
+		$('#consultation_form').find('textarea[name="message"]').focus();
+	}
+	if(date == "NaN/NaN/NaN"){
+		empty.push("Date");
+		$('#consultation_form').find('input[name="date"]').focus();
+	}
+	return empty
+}
+
+function isEmpty(string){
+	if(string == ""){
+		return true
+	}
+	return false
+}
+
+
+function createConsultation(name,email,phone_number,company,date,message,start_time,end_time,timezone){
 	var appointment = {
 		"name": name,
 		"e-mail": email,
@@ -143,6 +210,10 @@ function validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridia
 		return false
 	}
 	return true
+}
+
+function focusElement(x) {
+    x.style.background = "#D49090";
 }
 
 Number.prototype.mod = function(n) {
