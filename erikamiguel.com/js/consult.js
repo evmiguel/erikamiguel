@@ -27,51 +27,35 @@ function form_submit() {
 		var start_time = getTime(hour_start, minute_start,start_meridian);
 		var end_time = getTime(hour_end, minute_end,end_meridian);
 		var timezone = getTimeZone()
-		createConsultation(name,email,date,start_time,end_time,timezone);
+		createConsultation(name,email,phone_number,company,date,message,start_time,end_time,timezone);
 	}
 }
-
-function ValidateEmail(inputText)  
-{  
-	var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;  
-	if(inputText.value.match(mailformat))  
-	{  
-		document.form1.text1.focus();  
-		return true;  
-	}  
-	else  
-	{  
-		alert("You have entered an invalid email address!");  
-		document.form1.text1.focus();  
-	return false;  
-	}  
-} 
 
 function getEmptyFields(name,email,phone_number,company,message,date){
 	var empty = []
 	if(isEmpty(name)){
 		empty.push("Name");
-		$('#consultation_form').find('input[name="full_name"]').focus()
+		focusElement($('#consultation_form').find('input[name="full_name"]')[0]);
 	}
 	if(isEmpty(email)){
 		empty.push("E-mail");
-		$('#consultation_form').find('input[name="email"]').focus();
+		focusElement($('#consultation_form').find('input[name="email"]')[0]);
 	}
 	if(isEmpty(phone_number)){
 		empty.push("Phone Number");
-		$('#consultation_form').find('input[name="phone_number"]').focus();
+		focusElement($('#consultation_form').find('input[name="phone_number"]')[0]);
 	}
 	if(isEmpty(company)){
 		empty.push("Company");
-		$('#consultation_form').find('input[name="company"]').focus();
+		focusElement($('#consultation_form').find('input[name="company"]')[0]);
 	}
 	if(isEmpty(message)){
 		empty.push("Message");
-		$('#consultation_form').find('textarea[name="message"]').focus();
+		focusElement($('#consultation_form').find('textarea[name="message"]')[0]);
 	}
 	if(date == "NaN/NaN/NaN"){
 		empty.push("Date");
-		$('#consultation_form').find('input[name="date"]').focus();
+		focusElement($('#consultation_form').find('input[name="date"]')[0]);
 	}
 	return empty
 }
@@ -91,7 +75,10 @@ function createConsultation(name,email,phone_number,company,date,message,start_t
 		"date": date,
 		"start_time": start_time,
 		"end_time": end_time,
-		"time_zone": timezone
+		"time_zone": timezone,
+		"company": company,
+		"message": message,
+		"phone_number": phone_number
 	}
 	if(start_time.includes("PM") && end_time.includes("AM")){
 		var end_date = new Date(date);
@@ -213,7 +200,7 @@ function validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridia
 }
 
 function focusElement(x) {
-    x.style.background = "#D49090";
+    x.style.background = "#FFC9C9";
 }
 
 Number.prototype.mod = function(n) {
