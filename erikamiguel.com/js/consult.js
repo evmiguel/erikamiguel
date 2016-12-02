@@ -19,8 +19,23 @@ function form_submit() {
 		 	item = "&nbsp;&nbsp;&nbsp;&nbsp;<b>" + empty[i] + "</b><br>"
 			missing += item
 		}
-		document.getElementById("missing").innerHTML = missing
+		document.getElementById("missing").innerHTML = missing;
 		return
+	} else {
+		document.getElementById("missing").innerHTML = "";
+	}
+
+	incorrectFormat = isFormatCorrect(email,phone_number);
+	if(incorrectFormat.length > 0 ){
+		invalid = "<b>Incorrect Formatting:</b> <br>";
+		for (var i = 0, j = incorrect.length; i < j; i++){
+		 	item = incorrect[i];
+			invalid += item;
+		}
+		document.getElementById("invalid").innerHTML = invalid;
+		return
+	} else {
+		document.getElementById("invalid").innerHTML = "";
 	}
 
 	if (validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridian, end_meridian)){
@@ -31,31 +46,72 @@ function form_submit() {
 	}
 }
 
+function isFormatCorrect(email,phone_number){
+	incorrect = [];
+	email_regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+	phone_number_regex = /^(?![a-zA-Z])([\+]?\d+[-]?[(]?\d+[)]?\d+[-.]?\d+[-.]?\d)$/;
+	email_element = $('#consultation_form').find('input[name="email"]')[0];
+	phone_number_element = $('#consultation_form').find('input[name="phone_number"]')[0];
+	if(!email_regex.test(email)){
+		incorrect.push("E-mail format should be <i>something@domain.com</i><br>");
+		focusElement(email_element);
+	} else {
+		unFocusElement(email_element)
+	}
+	if(!phone_number_regex.test(phone_number)){
+		incorrect.push("Phone number not valid.<br>");
+		focusElement(phone_number_element);
+	} else {
+		unFocusElement(phone_number_element);
+	}
+
+	return incorrect;
+}
+
 function getEmptyFields(name,email,phone_number,company,message,date){
 	var empty = []
+	name_element = $('#consultation_form').find('input[name="full_name"]')[0];
+	email_element = $('#consultation_form').find('input[name="email"]')[0];
+	phone_number_element = $('#consultation_form').find('input[name="phone_number"]')[0];
+	company_element = $('#consultation_form').find('input[name="company"]')[0];
+	message_element = $('#consultation_form').find('textarea[name="message"]')[0];
+	date_element = $('#consultation_form').find('input[name="date"]')[0];
+
 	if(isEmpty(name)){
 		empty.push("Name");
-		focusElement($('#consultation_form').find('input[name="full_name"]')[0]);
+		focusElement(name_element);
+	} else {
+		unFocusElement(name_element);
 	}
 	if(isEmpty(email)){
 		empty.push("E-mail");
-		focusElement($('#consultation_form').find('input[name="email"]')[0]);
+		focusElement(email_element);
+	} else {
+		unFocusElement(email_element);
 	}
 	if(isEmpty(phone_number)){
 		empty.push("Phone Number");
-		focusElement($('#consultation_form').find('input[name="phone_number"]')[0]);
+		focusElement(phone_number_element);
+	} else {
+		unFocusElement(phone_number_element);
 	}
 	if(isEmpty(company)){
 		empty.push("Company");
-		focusElement($('#consultation_form').find('input[name="company"]')[0]);
+		focusElement(company_element);
+	} else {
+		unFocusElement(company_element);
 	}
 	if(isEmpty(message)){
 		empty.push("Message");
-		focusElement($('#consultation_form').find('textarea[name="message"]')[0]);
+		focusElement(message_element);
+	} else {
+		unFocusElement(message_element);
 	}
 	if(date == "NaN/NaN/NaN"){
 		empty.push("Date");
-		focusElement($('#consultation_form').find('input[name="date"]')[0]);
+		focusElement(date_element);
+	} else {
+		unFocusElement(date_element);
 	}
 	return empty
 }
@@ -201,6 +257,10 @@ function validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridia
 
 function focusElement(x) {
     x.style.background = "#FFC9C9";
+}
+
+function unFocusElement(x) {
+    x.style.background = "";
 }
 
 Number.prototype.mod = function(n) {
