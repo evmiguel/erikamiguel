@@ -45,6 +45,15 @@ $(document).ready(function(){
         time: 1000
     });
 
+    $(function() {
+			if (!Modernizr.inputtypes['date']) {
+				$('input[type=date]').attr('placeholder',"")
+				$('input[type=date]').datepicker({
+					dateFormat: 'yy-mm-dd'
+				});
+			}
+		});
+
 });
 
 
