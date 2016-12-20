@@ -248,9 +248,6 @@ function validateTimes(hour_start,hour_end,minute_start,minute_end,start_meridia
 	if ((Math.abs(end_int-start_int) > 1) || ((Math.abs(end_int-start_int) >= 1) && (minute_end - minute_start > 0))) {
 		document.getElementById("success").innerHTML = error_message
 		return false
-	} else if ((Math.abs(end_int-start_int) == 0)){
-		document.getElementById("success").innerHTML = "Please select a time interval that is an hour at most."
-		return false
 	}
 	return true
 }
