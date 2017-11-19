@@ -51,7 +51,7 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
     # -----------------------------------------------------
     def generateToken(self):
         logger.info("Generating token...")
-        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : str(self.ttl), 'created' : int(time.time()) }
+        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : self.ttl, 'created' : int(time.time()) }
 
         logger.info("Adding token {} to database...".format(tokenData['token']))
         response = self.dynamodb.put_item(
