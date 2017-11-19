@@ -47,7 +47,8 @@ class LoginModulesTests(unittest.TestCase):
         response = authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
         self.assertTrue(response["token"])
         self.assertTrue(response["ttl"])
-        self.assertTrue(response["created"])
+        self.assertTrue(response["createdTime"])
+        self.assertTrue(response["expireTime"])
 
         # A user that does not exist
         credentials = SimpleCredentials("fakeuser", "fakepassword")
