@@ -1,3 +1,4 @@
 {
-  "dynamoLoginTable": "loginTests"
+  "dynamoLoginTable": "loginTests",
+  "dynamoTokenTable": "testToken"
 }

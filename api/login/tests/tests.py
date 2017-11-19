@@ -38,9 +38,20 @@ class LoginModulesTests(unittest.TestCase):
     def testAuthorizer(self):
         authFactory = AWSAuthorizerFactory()
         authorizer = authFactory.createAuthorizer("dynamodb", CONFIG)
-        self.assertTrue(authorizer.table, CONFIG["dynamoLoginTable"])
+        self.assertTrue(authorizer.loginTable, CONFIG["dynamoLoginTable"])
+        self.assertTrue(authorizer.tokenTable, CONFIG["dynamoTokenTable"])
 
+        # A user that exists
         credentials = SimpleCredentials("foo", "bar")
         credentialsDictionary = credentials.getCredentials()["credentials"]
         response = authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
         self.assertTrue(response["token"])
+        self.assertTrue(response["ttl"])
+        self.assertTrue(response["created"])
+
+        # A user that does not exist
+        credentials = SimpleCredentials("fakeuser", "fakepassword")
+        credentialsDictionary = credentials.getCredentials()["credentials"]
+        with self.assertRaises(AuthenticationException):
+            authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
+
