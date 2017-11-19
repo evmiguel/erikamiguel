@@ -33,7 +33,8 @@ class LoginModulesTests(unittest.TestCase):
     def testCredentialsAuthentication(self):
         credentials = SimpleCredentials("foo", "bar")
         credentialsAuthenticator = DynamodbCredentialsAuthenticator(credentials, CONFIG)
-        self.assertTrue(credentialsAuthenticator.authenticate())
+        response = credentialsAuthenticator.authenticate()
+        self.assertTrue(response)
 
     def testAuthorizer(self):
         authFactory = AWSAuthorizerFactory()
