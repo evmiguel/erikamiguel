@@ -1,0 +1,4 @@
+{
+  "dynamoLoginTable": "loginTests",
+  "dynamoTokenTable": "testToken"
+}
