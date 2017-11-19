@@ -40,21 +40,18 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         This class is the implementation of a authorizer that
         authorizes basic credentials in DynamoDB.
     '''
-    def __init__(self, loginTable, tokenTable):
+    def __init__(self, loginTable, tokenTable, ttl=3600):
         self.loginTable = loginTable
         self.tokenTable = tokenTable
         self.dynamodb = boto3.client('dynamodb')
+        self.ttl = ttl
 
     # -----------------------------------------------------
     # Public Methods
     # -----------------------------------------------------
     def generateToken(self):
-        logger.info("Getting table default TTL...")
-        ttlData =  self.dynamodb.describe_time_to_live(TableName = self.tokenTable)
-        ttl = ttlData['TimeToLiveDescription']['AttributeName']
-
         logger.info("Generating token...")
-        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : ttl, 'created' : int(time.time()) }
+        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : str(self.ttl), 'created' : int(time.time()) }
 
         logger.info("Adding token {} to database...".format(tokenData['token']))
         response = self.dynamodb.put_item(
