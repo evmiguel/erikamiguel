@@ -62,7 +62,7 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
 
         # Raise exception if token cannot be added to DynamoDB
         if status != 200:
-            msg = "Token failed to generate! Response error {}".format(status)
+            msg = "AuthenticationException: Token failed to generate! Response error {}".format(status)
             raise AuthenticationException(msg)
         return tokenData
 
@@ -78,7 +78,7 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         )
         status = response['ResponseMetadata']['HTTPStatusCode']
         if 'Item' not in response:  # Item should be in dictionary if the user exists
-            msg = "User does not exist!"
+            msg = "AuthenticationException: User does not exist!"
             raise AuthenticationException(msg)
 
         # Check if the user matches
@@ -87,7 +87,7 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         if responseUsername == username and responsePassword == responsePassword and status == 200:
             return self.generateToken()
         else:
-            msg = "Username or password are invalid! HTTP error {}".format(status)
+            msg = "AuthenticationException: Username or password are invalid! HTTP error {}".format(status)
             raise AuthenticationException(msg)
 
 #----------------------------------------------------------
