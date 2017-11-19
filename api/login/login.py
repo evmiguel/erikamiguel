@@ -3,8 +3,6 @@
 
     This module defines a login flow for AWS Lambda
 """
-import boto3, secrets
-
 #----------------------------------------------------------
 # Credentials Classes
 #----------------------------------------------------------
@@ -18,6 +16,7 @@ class AbstractCredentialsAPI(object):
     '''
     def getCredentials(self):
         msg = "{}.{} MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "getCredentials")
+        raise NotImplementedError(msg)
 
 ###########################################################
 # Simple Credentials Object
@@ -63,6 +62,7 @@ class AbstractCredentialsAuthenticatorAPI(object):
 
     def authenticate(self):
         msg = "{}.{} MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "authenticate")
+        raise NotImplementedError(msg)
 
 ###########################################################
 # Simple Credentials Validator Interface
@@ -79,27 +79,10 @@ class DynamodbCredentialsAuthenticator(AbstractCredentialsAuthenticatorAPI):
         self.credentialsObject = credentialsObject
         self.config = config
 
-    def __isValid(self, credentials):
-        dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table(self.config["dynamoTable"])
-        response = table.get_item(
-
-            Key={'username': credentials["username"]}
-        )
-        return response
-
     # -----------------------------------------------------
     # Public Methods
     # -----------------------------------------------------
     def authenticate(self):
         credentialsDict = self.credentialsObject.getCredentials()
         credentials = credentialsDict["credentials"]
-        return self.__isValid(credentials)
-
-#TODO create an endpoint for tokens
-
-###########################################################
-# Authentication Exception
-###########################################################
-class AuthenticationException(Exception):
-    ''' Raise this for authentication errors '''
+        #TODO send credentials to auth endpoint

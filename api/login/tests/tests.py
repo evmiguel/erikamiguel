@@ -5,6 +5,7 @@
 """
 import unittest, os, json
 from login.login import *
+from login.authorizer import *
 
 #--------------------------------------------------------
 # Configuration Setup
@@ -33,3 +34,13 @@ class LoginModulesTests(unittest.TestCase):
         credentials = SimpleCredentials("foo", "bar")
         credentialsAuthenticator = DynamodbCredentialsAuthenticator(credentials, CONFIG)
         self.assertTrue(credentialsAuthenticator.authenticate())
+
+    def testAuthorizer(self):
+        authFactory = AWSAuthorizerFactory()
+        authorizer = authFactory.createAuthorizer("dynamodb", CONFIG)
+        self.assertTrue(authorizer.table, CONFIG["dynamoLoginTable"])
+
+        credentials = SimpleCredentials("foo", "bar")
+        credentialsDictionary = credentials.getCredentials()["credentials"]
+        response = authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
+        self.assertTrue(response["token"])
