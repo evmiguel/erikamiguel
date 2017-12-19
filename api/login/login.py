@@ -3,6 +3,8 @@
 
     This module defines a login flow for AWS Lambda
 """
+import requests, json
+
 #----------------------------------------------------------
 # Credentials Classes
 #----------------------------------------------------------
@@ -85,4 +87,8 @@ class DynamodbCredentialsAuthenticator(AbstractCredentialsAuthenticatorAPI):
     def authenticate(self):
         credentialsDict = self.credentialsObject.getCredentials()
         credentials = credentialsDict["credentials"]
-        #TODO send credentials to auth endpoint
+        authenticationEndpoint = self.config["authenticationEndpoint"]
+        jsonData = json.dumps({ "username": credentials["username"], "password": credentials["password"]})
+        r = requests.post(authenticationEndpoint,data=jsonData)
+        return r.json()
+

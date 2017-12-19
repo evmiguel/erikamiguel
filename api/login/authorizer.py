@@ -51,12 +51,15 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
     # -----------------------------------------------------
     def generateToken(self):
         logger.info("Generating token...")
-        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : self.ttl, 'created' : int(time.time()) }
+        tokenData = { 'token' : secrets.token_hex(16), 'ttl' : self.ttl, 'createdTime' : int(time.time()), "expireTime" : int(time.time()) + self.ttl }
 
         logger.info("Adding token {} to database...".format(tokenData['token']))
         response = self.dynamodb.put_item(
             TableName = self.tokenTable,
-            Item = { 'token' : { 'S' : tokenData['token'] }, 'createdDate' : { 'N' : str(tokenData['created']) } }
+            Item = { 'token' : {'S' : tokenData['token']},
+                     'createdTime': {'N': str(tokenData['createdTime'])},
+                     'expireTime' : {'N' : str(tokenData['expireTime'])}
+                    }
         )
         status = response["ResponseMetadata"]["HTTPStatusCode"]
 

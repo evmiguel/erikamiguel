@@ -1,4 +1,5 @@
 {
   "dynamoLoginTable": "loginTests",
-  "dynamoTokenTable": "testToken"
+  "dynamoTokenTable": "testToken",
+  "authenticationEndpoint": "https://api.erikamiguel.com/authorize/authorizeqa"
 }
