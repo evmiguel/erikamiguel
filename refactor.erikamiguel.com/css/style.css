@@ -9,6 +9,10 @@ ul {
 	font-size: 18px;
 }
 
+.credit {
+	padding-top: 80px;
+}
+
 
 /**
 	Custon Styling
@@ -52,6 +56,10 @@ h2 {
   font-weight: 500;
   font-family: 'Saira Extra Condensed', serif;
   font-size: 1.35rem; }
+
+.list-social-icons {
+	padding-top: 50px;
+}
 
 .list-social-icons a {
   color: #495057; }
