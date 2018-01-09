@@ -29,7 +29,7 @@ class AbstractAuthorizerAPI(object):
     # Public Methods
     # -----------------------------------------------------
     def authorize(self):
-        msg = "{}.{} MUST BE IMPLEMENTED BY A SUBCLASS"
+        msg = "{}.{}() MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "authorize")
         raise NotImplementedError(msg)
 
 ###########################################################
@@ -40,6 +40,9 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         This class is the implementation of a authorizer that
         authorizes basic credentials in DynamoDB.
     '''
+    # -----------------------------------------------------
+    # Built-in Methods
+    # -----------------------------------------------------
     def __init__(self, loginTable, tokenTable, ttl=3600):
         self.loginTable = loginTable
         self.tokenTable = tokenTable
@@ -92,6 +95,45 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         else:
             msg = "AuthenticationException: Username or password are invalid! HTTP error {}".format(status)
             raise AuthenticationException(msg)
+
+# ----------------------------------------------------------
+# Token Validator Classes
+# ----------------------------------------------------------
+###########################################################
+# Abstract Token Validator
+###########################################################
+class AbstractTokenValidator(object):
+    '''
+        This class describes the API for
+         validating tokens
+    '''
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def validateToken(self, token):
+        msg = "{}.{}() MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "validateToken")
+        raise NotImplementedError(msg)
+
+###########################################################
+# DynamoDB Token Validator
+###########################################################
+class DynamoDBTokenValidator(AbstractTokenValidator):
+    '''
+        This class is an implementation for a token
+        validator against DynamoDB
+    '''
+    # -----------------------------------------------------
+    # Built-in Methods
+    # -----------------------------------------------------
+    def __init__(self, tokenTable):
+        self.tokenTable = tokenTable
+        self.dynamodb = boto3.client('dynamodb')
+
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def validateToken(self, token):
+        pass
 
 #----------------------------------------------------------
 # Authorizer Factory Classes

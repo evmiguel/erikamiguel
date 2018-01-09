@@ -57,3 +57,17 @@ class LoginModulesTests(unittest.TestCase):
         with self.assertRaises(AuthenticationException):
             authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
 
+    def testTokenValidator(self):
+        authFactory = AWSAuthorizerFactory()
+        authorizer = authFactory.createAuthorizer("dynamodb", CONFIG)
+        credentials = SimpleCredentials("foo", "bar")
+        credentialsDictionary = credentials.getCredentials()["credentials"]
+        response = authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
+
+        token = response["token"]
+        validator = DynamoDBTokenValidator(CONFIG["dynamoTokenTable"])
+        print(validator.validateToken(token))
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
+
