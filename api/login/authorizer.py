@@ -15,6 +15,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #----------------------------------------------------------
+# Constants
+#----------------------------------------------------------
+DYNAMODB = "dynamodb"
+
+#----------------------------------------------------------
 # Authorizer Classes
 #----------------------------------------------------------
 ###########################################################
@@ -187,9 +192,49 @@ class AbstractAuthorizerFactoryAPI(object):
 # AWS Authorizer Interface
 ###########################################################
 class AWSAuthorizerFactory(AbstractAuthorizerFactoryAPI):
+    '''
+        This is the AWS Authorizer Factory implementation
+    '''
     def getAuthorizer(self, type, config):
-        if type == "dynamodb":
+        if type == DYNAMODB:
             return DynamoDBSimpleAuthorizer(config["dynamoLoginTable"], config["dynamoTokenTable"])
+
+# ----------------------------------------------------------
+# Token Validator Factory Classes
+# ----------------------------------------------------------
+###########################################################
+# Abstract Token Validator Factory Interface
+###########################################################
+class AbstractTokenValidatorFactoryAPI(object):
+    '''
+        This class describes the methods for creating
+        token validator objects in a factory fashion
+    '''
+
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def createTokenValidator(self, type, config):
+        return self.getTokenValidator(type, config)
+
+    def getTokenValidator(self, type, config):
+        '''
+            Factory method to be implemented for getting
+            an authorizer object
+        '''
+        msg = "{}.{}() MUST BE IMPLEMENTED BY SUBCLASSES".format(object.__class__.__name__, "getTokenValidator")
+        raise NotImplementedError(msg)
+
+###########################################################
+# AWS Token Validator Factory Interface
+###########################################################
+class AWSTokenValidatorFactory(AbstractTokenValidatorFactoryAPI):
+    '''
+        This is the AWS Token Validator Factory
+    '''
+    def getTokenValidator(self, type, config):
+        if type == DYNAMODB:
+            return DynamoDBTokenValidator(config["dynamoTokenTable"])
 
 #----------------------------------------------------------
 # Custom Exceptions
