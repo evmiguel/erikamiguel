@@ -74,27 +74,39 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
 
     def authorize(self, username, password):
         '''
-        :param username:
-        :param password:
+        :param username: string
+        :param password: string
         :return: token string
         '''
+        try:
+            if self.userCredentialsValid(username, password):
+                return self.generateToken()
+        except AuthenticationException as e:
+            msg = "AuthenticationException: Username or password are invalid! Error {}".format(e)
+            logger.error(msg)
+            raise AuthenticationException(msg)
+
+    def userCredentialsValid(self, username, password):
+        '''
+        :param username: string
+        :param password: string
+        :return: boolean
+        '''
         response = self.dynamodb.get_item(
-            TableName = self.loginTable,
-            Key={'username': {'S': username} }
+            TableName=self.loginTable,
+            Key={'username': {'S': username}}
         )
         status = response['ResponseMetadata']['HTTPStatusCode']
         if 'Item' not in response:  # Item should be in dictionary if the user exists
-            msg = "AuthenticationException: User does not exist!"
+            msg = "AuthenticationException: User does not exist! HTTP status {}".format(status)
+            logger.error(msg)
             raise AuthenticationException(msg)
 
         # Check if the user matches
         responseUsername = response['Item']['username']['S']
         responsePassword = response['Item']['password']['S']
-        if responseUsername == username and responsePassword == responsePassword and status == 200:
-            return self.generateToken()
-        else:
-            msg = "AuthenticationException: Username or password are invalid! HTTP error {}".format(status)
-            raise AuthenticationException(msg)
+        return (responseUsername == username and responsePassword == responsePassword and status == 200)
+
 
 # ----------------------------------------------------------
 # Token Validator Classes
@@ -133,7 +145,18 @@ class DynamoDBTokenValidator(AbstractTokenValidator):
     # Public Methods
     # -----------------------------------------------------
     def validateToken(self, token):
-        pass
+        logger.info("Validating token {}...".format(token))
+        response = self.dynamodb.get_item(
+            TableName=self.tokenTable,
+            Key={'token': {'S': token}}
+        )
+        status = response['ResponseMetadata']['HTTPStatusCode']
+        if 'Item' not in response or status != 200:  # Item should be in dictionary if the user exists
+            msg = "TokenNotFoundException: Token not valid!"
+            logger.error(msg)
+            raise AuthenticationException(msg)
+
+        return { "tokenValid" : True }
 
 #----------------------------------------------------------
 # Authorizer Factory Classes

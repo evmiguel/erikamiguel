@@ -3,7 +3,8 @@
 
     Unit tests for login modules
 """
-import unittest, os, json
+import unittest, os, json, random
+import string as str
 from login.login import *
 from login.authorizer import *
 
@@ -66,7 +67,10 @@ class LoginModulesTests(unittest.TestCase):
 
         token = response["token"]
         validator = DynamoDBTokenValidator(CONFIG["dynamoTokenTable"])
-        print(validator.validateToken(token))
+        self.assertTrue(validator.validateToken(token)["tokenValid"])
+
+        with self.assertRaises(AuthenticationException):
+            validator.validateToken(''.join(random.choices(str.ascii_uppercase + str.digits, k=10)))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
