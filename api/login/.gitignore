@@ -1,3 +1,4 @@
 local
 __pycache__
-authorizerLambda.json
+*.json
+*.zip

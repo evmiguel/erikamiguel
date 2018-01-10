@@ -3,7 +3,8 @@
 
     Unit tests for login modules
 """
-import unittest, os, json
+import unittest, os, json, random
+import string as str
 from login.login import *
 from login.authorizer import *
 
@@ -56,4 +57,28 @@ class LoginModulesTests(unittest.TestCase):
         credentialsDictionary = credentials.getCredentials()["credentials"]
         with self.assertRaises(AuthenticationException):
             authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
+
+    def testTokenValidator(self):
+        authFactory = AWSAuthorizerFactory()
+        authorizer = authFactory.createAuthorizer("dynamodb", CONFIG)
+        credentials = SimpleCredentials("foo", "bar")
+        credentialsDictionary = credentials.getCredentials()["credentials"]
+        response = authorizer.authorize(credentialsDictionary["username"], credentialsDictionary["password"])
+
+        token = response["token"]
+        validator = AWSTokenValidatorFactory().createTokenValidator("dynamodb", CONFIG)
+        self.assertTrue(validator.validateToken(token))
+
+        with self.assertRaises(AuthenticationException):
+            validator.validateToken(''.join(random.choices(str.ascii_uppercase + str.digits, k=10)))
+
+    def testUserExistsWithAuthorizer(self):
+        authorizer = AWSAuthorizerFactory().createAuthorizer("dynamodb", CONFIG)
+        credentials = SimpleCredentials("foo", "bar")
+        credentialsDictionary = credentials.getCredentials()["credentials"]
+        self.assertTrue(authorizer.userCredentialsValid(credentialsDictionary["username"], credentialsDictionary["password"]))
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
 

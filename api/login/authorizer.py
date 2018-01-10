@@ -15,6 +15,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #----------------------------------------------------------
+# Constants
+#----------------------------------------------------------
+DYNAMODB = "dynamodb"
+
+#----------------------------------------------------------
 # Authorizer Classes
 #----------------------------------------------------------
 ###########################################################
@@ -29,7 +34,7 @@ class AbstractAuthorizerAPI(object):
     # Public Methods
     # -----------------------------------------------------
     def authorize(self):
-        msg = "{}.{} MUST BE IMPLEMENTED BY A SUBCLASS"
+        msg = "{}.{}() MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "authorize")
         raise NotImplementedError(msg)
 
 ###########################################################
@@ -40,6 +45,9 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         This class is the implementation of a authorizer that
         authorizes basic credentials in DynamoDB.
     '''
+    # -----------------------------------------------------
+    # Built-in Methods
+    # -----------------------------------------------------
     def __init__(self, loginTable, tokenTable, ttl=3600):
         self.loginTable = loginTable
         self.tokenTable = tokenTable
@@ -71,27 +79,89 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
 
     def authorize(self, username, password):
         '''
-        :param username:
-        :param password:
+        :param username: string
+        :param password: string
         :return: token string
         '''
+        try:
+            if self.userCredentialsValid(username, password):
+                return self.generateToken()
+        except AuthenticationException as e:
+            msg = "AuthenticationException: Username or password are invalid! Error {}".format(e)
+            logger.error(msg)
+            raise AuthenticationException(msg)
+
+    def userCredentialsValid(self, username, password):
+        '''
+        :param username: string
+        :param password: string
+        :return: boolean
+        '''
         response = self.dynamodb.get_item(
-            TableName = self.loginTable,
-            Key={'username': {'S': username} }
+            TableName=self.loginTable,
+            Key={'username': {'S': username}}
         )
         status = response['ResponseMetadata']['HTTPStatusCode']
         if 'Item' not in response:  # Item should be in dictionary if the user exists
             msg = "AuthenticationException: User does not exist!"
+            logger.error(msg)
             raise AuthenticationException(msg)
 
         # Check if the user matches
         responseUsername = response['Item']['username']['S']
         responsePassword = response['Item']['password']['S']
-        if responseUsername == username and responsePassword == responsePassword and status == 200:
-            return self.generateToken()
-        else:
-            msg = "AuthenticationException: Username or password are invalid! HTTP error {}".format(status)
+        return (responseUsername == username and responsePassword == responsePassword and status == 200)
+
+
+# ----------------------------------------------------------
+# Token Validator Classes
+# ----------------------------------------------------------
+###########################################################
+# Abstract Token Validator
+###########################################################
+class AbstractTokenValidator(object):
+    '''
+        This class describes the API for
+         validating tokens
+    '''
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def validateToken(self, token):
+        msg = "{}.{}() MUST BE IMPLEMENTED BY A SUBCLASS".format(object.__class__.__name__, "validateToken")
+        raise NotImplementedError(msg)
+
+###########################################################
+# DynamoDB Token Validator
+###########################################################
+class DynamoDBTokenValidator(AbstractTokenValidator):
+    '''
+        This class is an implementation for a token
+        validator against DynamoDB
+    '''
+    # -----------------------------------------------------
+    # Built-in Methods
+    # -----------------------------------------------------
+    def __init__(self, tokenTable):
+        self.tokenTable = tokenTable
+        self.dynamodb = boto3.client('dynamodb')
+
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def validateToken(self, token):
+        logger.info("Validating token {}...".format(token))
+        response = self.dynamodb.get_item(
+            TableName=self.tokenTable,
+            Key={'token': {'S': token}}
+        )
+        status = response['ResponseMetadata']['HTTPStatusCode']
+        if 'Item' not in response or status != 200:  # Item should be in dictionary if the user exists
+            msg = "TokenNotFoundException: Token not valid!"
+            logger.error(msg)
             raise AuthenticationException(msg)
+
+        return response["Item"]["token"]["S"] == token
 
 #----------------------------------------------------------
 # Authorizer Factory Classes
@@ -122,9 +192,49 @@ class AbstractAuthorizerFactoryAPI(object):
 # AWS Authorizer Interface
 ###########################################################
 class AWSAuthorizerFactory(AbstractAuthorizerFactoryAPI):
+    '''
+        This is the AWS Authorizer Factory implementation
+    '''
     def getAuthorizer(self, type, config):
-        if type == "dynamodb":
+        if type == DYNAMODB:
             return DynamoDBSimpleAuthorizer(config["dynamoLoginTable"], config["dynamoTokenTable"])
+
+# ----------------------------------------------------------
+# Token Validator Factory Classes
+# ----------------------------------------------------------
+###########################################################
+# Abstract Token Validator Factory Interface
+###########################################################
+class AbstractTokenValidatorFactoryAPI(object):
+    '''
+        This class describes the methods for creating
+        token validator objects in a factory fashion
+    '''
+
+    # -----------------------------------------------------
+    # Public Methods
+    # -----------------------------------------------------
+    def createTokenValidator(self, type, config):
+        return self.getTokenValidator(type, config)
+
+    def getTokenValidator(self, type, config):
+        '''
+            Factory method to be implemented for getting
+            an authorizer object
+        '''
+        msg = "{}.{}() MUST BE IMPLEMENTED BY SUBCLASSES".format(object.__class__.__name__, "getTokenValidator")
+        raise NotImplementedError(msg)
+
+###########################################################
+# AWS Token Validator Factory Interface
+###########################################################
+class AWSTokenValidatorFactory(AbstractTokenValidatorFactoryAPI):
+    '''
+        This is the AWS Token Validator Factory
+    '''
+    def getTokenValidator(self, type, config):
+        if type == DYNAMODB:
+            return DynamoDBTokenValidator(config["dynamoTokenTable"])
 
 #----------------------------------------------------------
 # Custom Exceptions
