@@ -67,7 +67,7 @@ class LoginModulesTests(unittest.TestCase):
 
         token = response["token"]
         validator = AWSTokenValidatorFactory().createTokenValidator("dynamodb", CONFIG)
-        self.assertTrue(validator.validateToken(token)["tokenValid"])
+        self.assertTrue(validator.validateToken(token))
 
         with self.assertRaises(AuthenticationException):
             validator.validateToken(''.join(random.choices(str.ascii_uppercase + str.digits, k=10)))

@@ -103,7 +103,7 @@ class DynamoDBSimpleAuthorizer(AbstractAuthorizerAPI):
         )
         status = response['ResponseMetadata']['HTTPStatusCode']
         if 'Item' not in response:  # Item should be in dictionary if the user exists
-            msg = "AuthenticationException: User does not exist! HTTP status {}".format(status)
+            msg = "AuthenticationException: User does not exist!"
             logger.error(msg)
             raise AuthenticationException(msg)
 
@@ -161,7 +161,7 @@ class DynamoDBTokenValidator(AbstractTokenValidator):
             logger.error(msg)
             raise AuthenticationException(msg)
 
-        return { "tokenValid" : True }
+        return response["Item"]["token"]["S"] == token
 
 #----------------------------------------------------------
 # Authorizer Factory Classes
