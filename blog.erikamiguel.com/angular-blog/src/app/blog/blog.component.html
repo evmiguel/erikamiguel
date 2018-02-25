@@ -1,0 +1,9 @@
+<h2>{{title}}</h2>
+<ul class="blogs">
+  <li *ngFor="let blog of blogs" (click)="onSelect(blog)">
+    	<h3>{{blog.title}}</h3>
+    	<h3>{{blog.author}}</h3>
+    	<h4>{{blog.date}}</h4>
+  </li>
+</ul>
+<p>{{selectedBlog.content}}</p>
