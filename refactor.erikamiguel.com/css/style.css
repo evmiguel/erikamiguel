@@ -86,17 +86,17 @@ h2 {
 	    display: flex;
 	    flex-direction: column;
 	    width: 17rem;
-	    height: 100vh; 
+	    height: 100vh;
 	}
  	#sideNav .navbar-brand {
       display: flex;
       margin: auto auto 0;
-      padding: 0.5rem; 
+      padding: 0.5rem;
   	}
     #sideNav .navbar-brand .img-profile {
         max-width: 10rem;
         max-height: 10rem;
-        border: 0.5rem solid rgba(255, 255, 255, 0.2); 
+        border: 0.5rem solid rgba(255, 255, 255, 0.2);
     }
     #sideNav .navbar-collapse {
       display: flex;
@@ -106,14 +106,14 @@ h2 {
       margin-bottom: auto; }
     #sideNav .navbar-collapse .navbar-nav {
         flex-direction: column;
-        width: 100%; 
+        width: 100%;
     }
     #sideNav .navbar-collapse .navbar-nav .nav-item {
-          display: block; 
+          display: block;
     }
     #sideNav .navbar-collapse .navbar-nav .nav-item .nav-link {
-            display: block; 
-    } 
+            display: block;
+    }
 }
 
 section.resume-section {
@@ -144,3 +144,11 @@ a {
   color: #BD5D38; }
   a:hover, a:focus, a:active {
     color: #824027; }
+
+
+.project-list {
+  margin-bottom: 1em;
+  border-bottom-style: solid;
+  border-bottom-color: black;
+  border-bottom-width: thin;
+}
